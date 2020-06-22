@@ -142,7 +142,12 @@ class SwiftIdentityContext(OSContextGenerator):
             'enable_multi_region': config('enable-multi-region'),
             'read_affinity': get_read_affinity(),
             'write_affinity': get_write_affinity(),
-            'write_affinity_node_count': get_write_affinity_node_count()
+            'write_affinity_node_count': get_write_affinity_node_count(),
+            'object_encryption_root_secret': config(
+                'object-encryption-root-secret'),
+            'domain_remap_name': config('domain-remap-name'),
+            's3_region': config('s3-region')
+
         }
 
         cmp_openstack = CompareOpenStackReleases(os_release('swift'))

@@ -440,3 +440,27 @@ options:
       storing the object’s replicas on up to 6 disks.
       .
       NOTE: use only when 'enable-multi-region=True'
+  object-encryption-root-secret:
+    type: string
+    default:
+    description: |
+      This setting enable the object encryption.
+      The encryption of object data is intended to mitigate the risk of users’
+      data being read if an unauthorised party were to gain physical access to
+      a disk.
+      .
+      you can generate the key using the following command
+      openssl rand -base64 32
+      .
+      NOTE: if you lost your key you can't recover the objects
+  domain-remap-name:
+    type: string
+    default:
+    description:
+      This setting will enable domain-remap middleware.
+  s3-region:
+    type: string
+    default: us-east-1
+    description:
+      Specify the current AWS S3 Region to emulate.
+    
