@@ -126,7 +126,7 @@ def get_overload_factor(ring_path):
     """Get the min_part_hours for a ring
 
     :param ring_path: The path for the ring
-    :returns: integer that is the min_part_hours
+    :returns: float that is the overload_factor
     """
     builder = _load_builder(ring_path)
     return builder.overload
