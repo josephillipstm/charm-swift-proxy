@@ -199,7 +199,8 @@ def config_changed():
     if not leader_get('swift-proxy-rings-consumer'):
         status_set('maintenance', 'Updating and (maybe) balancing rings')
         update_rings(min_part_hours=config('min-hours'),
-                     replicas=config('replicas'))
+                     replicas=config('replicas'),
+                     overload_factor=config('overload-factor'))
 
     if not config('disable-ring-balance') and is_elected_leader(SWIFT_HA_RES):
         # Try ring balance. If rings are balanced, no sync will occur.

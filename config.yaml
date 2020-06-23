@@ -463,4 +463,9 @@ options:
     default: us-east-1
     description:
       Specify the current AWS S3 Region to emulate.
+  overload-factor:
+    type: float
+    default: 0
+    description:
+      Specify the overload-factor of the ring.
     

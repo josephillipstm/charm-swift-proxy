@@ -122,6 +122,14 @@ def get_min_part_hours(ring_path):
     builder = _load_builder(ring_path)
     return builder.min_part_hours
 
+def get_overload_factor(ring_path):
+    """Get the min_part_hours for a ring
+
+    :param ring_path: The path for the ring
+    :returns: integer that is the min_part_hours
+    """
+    builder = _load_builder(ring_path)
+    return builder.overload
 
 def get_current_replicas(ring_path):
     """ Gets replicas from the ring (lp1815879)

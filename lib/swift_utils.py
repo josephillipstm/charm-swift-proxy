@@ -953,7 +953,7 @@ def sync_builders_and_rings_if_changed(f):
 
 
 @sync_builders_and_rings_if_changed
-def update_rings(nodes=None, min_part_hours=None, replicas=None):
+def update_rings(nodes=None, min_part_hours=None, replicas=None,overload_factor=None):
     """Update builder with node settings and balance rings if necessary.
 
     Also update min_part_hours if provided.
@@ -977,6 +977,27 @@ def update_rings(nodes=None, min_part_hours=None, replicas=None):
                         .format(ring, min_part_hours), level=INFO)
                     try:
                         set_min_part_hours(path, min_part_hours)
+                    except SwiftProxyCharmException as exc:
+                        # TODO: ignore for now since this should not be
+                        # critical but in the future we should support a
+                        # rollback.
+                        log(str(exc), level=WARNING)
+                    else:
+                        balance_required = True
+
+    if overload_factor is not None:
+        # NOTE: no need to stop the proxy since we are not changing the rings,
+        # only the builder.
+
+        # Only update if all exist
+        if all(os.path.exists(p) for p in SWIFT_RINGS.values()):
+            for ring, path in SWIFT_RINGS.items():
+                current_overload_factor = get_overload_factor(path)
+                if overload_factor != current_overload_factor:
+                    log("Setting ring {} overload factor to {}"
+                        .format(ring, min_part_hours), level=INFO)
+                    try:
+                        set_overload(path, overload_factor)
                     except SwiftProxyCharmException as exc:
                         # TODO: ignore for now since this should not be
                         # critical but in the future we should support a
@@ -1024,6 +1045,14 @@ def get_min_part_hours(path):
     """
     return get_manager().get_min_part_hours(path)
 
+def get_overload_factor(path):
+    """Just a proxy to the manager.py:get_overload_factor() function
+
+    :param path: the path to get the min_part_hours for
+    :returns: integer
+    """
+    return get_manager().get_overload_factor(path)
+
 
 def set_min_part_hours(path, value):
     cmd = ['swift-ring-builder', path, 'set_min_part_hours', str(value)]
@@ -1033,6 +1062,13 @@ def set_min_part_hours(path, value):
         raise SwiftProxyCharmException(
             "Failed to set min_part_hours={} on {}".format(value, path))
 
+def set_overload(path, value):
+    cmd = ['swift-ring-builder', path, 'set_overload', str(value)]
+    try:
+        subprocess.check_call(cmd)
+    except subprocess.CalledProcessError:
+        raise SwiftProxyCharmException(
+            "Failed to set overload factor={} on {}".format(value, path))
 
 def update_replicas(path, replicas):
     """ Updates replicas (lp1815879)
